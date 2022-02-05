@@ -1,12 +1,19 @@
 package fix
 
 import scalafix.v1._
+
 import scala.meta._
 
 class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case t @ q"List()"        => Patch.replaceTree(t, "List.empty")
+      case t @ q"List()" => Patch.replaceTree(t, "List.empty")
+      case t @ q"Nil" =>
+        t.parent match {
+          case Some(p"$_ $_ (..$_)") => Patch.empty
+          case Some(p"$_(..$_)")     => Patch.empty
+          case _                     => Patch.replaceTree(t, s"List.empty")
+        }
       case t @ q"List[$e]()"    => Patch.replaceTree(t, s"List.empty[$e]")
       case t @ q"Set()"         => Patch.replaceTree(t, "Set.empty")
       case t @ q"Set[$e]()"     => Patch.replaceTree(t, s"Set.empty[$e]")

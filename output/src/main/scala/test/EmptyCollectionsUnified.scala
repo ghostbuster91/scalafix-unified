@@ -11,6 +11,13 @@ object EmptyCollectionsUnified {
       case List() => 1
       case _      => 2
     }
+
+    val f = a match {
+      case 1 :: Nil => 1
+      case _        => 2
+    }
+
+    val g: List[Int] = List.empty
   }
 
   object set {
