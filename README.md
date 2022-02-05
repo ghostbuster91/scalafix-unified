@@ -23,3 +23,5 @@ For now only snapshots are published
 ThisBuild / scalafixResolvers +=  coursierapi.MavenRepository.of("https://s01.oss.sonatype.org/content/repositories/snapshots")
 ThisBuild /  scalafixDependencies += "io.github.ghostbuster91.scalafix-unified" %% "unified" % "0.0.2+1-01e64859-SNAPSHOT"
 ```
+
+Head over to latest CI build to obtain latest version number
