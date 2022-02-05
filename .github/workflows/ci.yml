@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java:
+          - name: AdoptOpenJDK 8
+            version: adopt@1.8
+          - name: AdoptOpenJDK 11
+            version: adopt@1.11
+    name: With ${{ matrix.java.name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - uses: olafurpg/setup-scala@v13
+        with:
+          java-version: ${{ matrix.java.version }}
+      - uses: coursier/cache-action@v6
+      - name: Lint
+        run: sbt scalafmtCheckAll "rules2_12/scalafix --check"
+      - name: Test
+        run: sbt coverage tests/test
