@@ -2,24 +2,53 @@ lazy val v = _root_.scalafix.sbt.BuildInfo
 lazy val rulesCrossVersions = Seq(v.scala213, v.scala212, v.scala211)
 lazy val scala3Version = "3.1.1"
 
+val commonSettings = Seq(
+  organization := "io.github.ghostbuster91.scalafix-unified",
+  homepage := Some(url("https://github.com/ghostbuster91/scalafix-unified")),
+  licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  developers := List(
+    Developer(
+      "ghostbuster91",
+      "Kasper Kondzielski",
+      "kghost0@gmail.com",
+      url("https://github.com/ghostbuster91")
+    )
+  ),
+  sonatypeCredentialHost := "s01.oss.sonatype.org",
+  sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
+  sonatypeProfileName := "io.github.ghostbuster91",
+  scalacOptions ++= List("-Yrangepos"),
+  sonatypeSnapshotResolver := {
+    MavenRepository(
+      "s01-sonatype-snapshots",
+      s"https://${sonatypeCredentialHost.value}/content/repositories/snapshots"
+    )
+  },
+  sonatypeStagingResolver := {
+    MavenRepository(
+      "s01-sonatype-staging",
+      s"https://${sonatypeCredentialHost.value}/service/local/staging/deploy/maven2"
+    )
+  },
+  publishTo :=  {
+    val profileM   = sonatypeTargetRepositoryProfile.?.value
+    val repository = sonatypeRepository.value
+    val staged = profileM.map { stagingRepoProfile =>
+      "releases" at s"${repository}/${stagingRepoProfile.deployPath}"
+    }
+    Some(staged.getOrElse(if (version.value.endsWith("-SNAPSHOT")) {
+      sonatypeSnapshotResolver.value
+    } else {
+      sonatypeStagingResolver.value
+    }))
+  }
+)
+
 inThisBuild(
   List(
-    organization := "io.github.ghostbuster91.scalafix-unified",
-    homepage := Some(url("https://github.com/scalacenter/named-literal-arguments")),
-    licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
-    developers := List(
-      Developer(
-        "ghostbuster91",
-        "Kasper Kondzielski",
-        "kghost0@gmail.com",
-        url("https://github.com/ghostbuster91")
-      )
-    ),
-    scalaVersion := v.scala213,
     semanticdbEnabled := true,
     semanticdbIncludeInJar := true,
     semanticdbVersion := scalafixSemanticdb.revision,
-    scalacOptions ++= List("-Yrangepos")
   )
 )
 
@@ -27,6 +56,7 @@ inThisBuild(
   * https://github.com/liancheng/scalafix-organize-imports/blob/master/build.sbt
   */
 lazy val rules = projectMatrix
+  .settings(commonSettings)
   .settings(
     moduleName := "unified",
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % v.scalafixVersion
@@ -35,6 +65,7 @@ lazy val rules = projectMatrix
   .jvmPlatform(rulesCrossVersions)
 
 lazy val input = projectMatrix
+  .settings(commonSettings)
   .settings(
     (publish / skip) := true
   )
@@ -42,6 +73,7 @@ lazy val input = projectMatrix
   .jvmPlatform(scalaVersions = rulesCrossVersions :+ scala3Version)
 
 lazy val output = projectMatrix
+  .settings(commonSettings)
   .settings(
     (publish / skip) := true
   )
@@ -49,6 +81,7 @@ lazy val output = projectMatrix
   .jvmPlatform(scalaVersions = rulesCrossVersions :+ scala3Version)
 
 lazy val tests = projectMatrix
+  .settings(commonSettings)
   .settings(
     (publish / skip) := true,
     libraryDependencies += "ch.epfl.scala" % "scalafix-testkit" % v.scalafixVersion % Test cross CrossVersion.full,
@@ -85,10 +118,12 @@ lazy val tests = projectMatrix
   )
 
 lazy val testsAggregate = Project("tests", file("target/testsAggregate"))
+  .settings(commonSettings)
   .aggregate(tests.projectRefs: _*)
 
 val root = project
   .in(file("."))
+  .settings(commonSettings)
   .settings(publish / skip := true)
   .aggregate(
     rules.projectRefs ++

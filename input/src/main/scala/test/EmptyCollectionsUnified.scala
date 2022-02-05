@@ -1,6 +1,6 @@
 /*
 rule = EmptyCollectionsUnified
-*/
+ */
 package test
 
 object EmptyCollectionsUnified {
@@ -12,7 +12,7 @@ object EmptyCollectionsUnified {
 
     val e = a match {
       case List() => 1
-      case _ => 2
+      case _      => 2
     }
   }
 
