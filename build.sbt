@@ -48,3 +48,8 @@ lazy val tests = project
   )
   .dependsOn(rules)
   .enablePlugins(ScalafixTestkitPlugin)
+
+val root = project
+  .in(file("."))
+  .settings(publish / skip := true)
+  .aggregate(input, rules, output, tests)
