@@ -7,17 +7,25 @@ object EmptyCollectionsUnified {
     val c = List.empty[Int]
     val d: List[Int] = List.empty
 
+    // should not rewrite List() from match case
     val e = a match {
       case List() => 1
       case _      => 2
     }
 
-    val f = a match {
-      case 1 :: Nil => 1
-      case _        => 2
-    }
+    // should not rewrite Nil when used with infix operator
+    val f = 1 :: Nil
 
-    val g: List[Int] = List.empty
+    // should not rewrite Nil when used with :: operator
+    val g = ::(1, Nil)
+
+    val h: List[Int] = List.empty
+
+    // should not rewrite Nil from match case
+    val i = a match {
+      case Nil => 1
+      case _   => 2
+    }
   }
 
   object set {
