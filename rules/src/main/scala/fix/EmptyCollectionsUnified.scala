@@ -7,8 +7,16 @@ import scala.meta._
 class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case t @ q"List()" => Patch.replaceTree(t, "List.empty")
-      case t @ p"case List() => $expr" => Patch.replaceTree(t, s"case Nil => $expr")
+      case t @ q"List[$e]()" => Patch.replaceTree(t, s"List.empty[$e]")
+      case t @ Term.Name("List") =>
+        t.parent match {
+          // val b: List[Int] = List()
+          case Some(p @ Term.Apply(_, _)) => Patch.replaceTree(p, "List.empty")
+          //  case (List(), List()) =>
+          //  case List() =>
+          case Some(p @ p"List()") => Patch.replaceTree(p, "Nil")
+          case _ => Patch.empty
+        }
       case t @ q"Nil" =>
         t.parent match {
           // ::(_, Nil)
@@ -25,7 +33,6 @@ class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
           case Some(p"(..$_)") => Patch.empty
           case _ => Patch.replaceTree(t, s"List.empty")
         }
-      case t @ q"List[$e]()" => Patch.replaceTree(t, s"List.empty[$e]")
       case t @ q"Set()" => Patch.replaceTree(t, "Set.empty")
       case t @ q"Set[$e]()" => Patch.replaceTree(t, s"Set.empty[$e]")
       case t @ q"Map()" => Patch.replaceTree(t, "Map.empty")

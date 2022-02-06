@@ -47,6 +47,12 @@ object EmptyCollectionsUnified {
       case (_, Nil) => 1
       case _ => 2
     }
+
+    // should rewrite to Nil when used within unapply
+    val m = (a, a) match {
+      case (List(), List()) => 1
+      case _ => 2
+    }
   }
 
   object set {
