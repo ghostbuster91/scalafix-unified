@@ -29,6 +29,24 @@ object EmptyCollectionsUnified {
       case Nil => 1
       case _ => 2
     }
+
+    // should not rewrite Nil from match case when used with infix extraction
+    val j = a match {
+      case _ :: Nil => 1
+      case _ => 2
+    }
+
+    // should not rewrite Nil from match case when used with extraction
+    val k = a match {
+      case ::(_, Nil) => 1
+      case _ => 2
+    }
+
+    // should not rewrite Nil when used within unapply
+    val l = (a, a) match {
+      case (_, Nil) => 1
+      case _ => 2
+    }
   }
 
   object set {

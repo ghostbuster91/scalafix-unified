@@ -11,12 +11,18 @@ class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
       case t @ p"case List() => $expr" => Patch.replaceTree(t, s"case Nil => $expr")
       case t @ q"Nil" =>
         t.parent match {
-          // (_, Nil)
+          // ::(_, Nil)
           case Some(Term.Apply(_, _)) => Patch.empty
           // 1 :: Nil
           case Some(Term.ApplyInfix(_)) => Patch.empty
-          // withing a case statement
+          // case Nil =>
           case Some(Case(_)) => Patch.empty
+          // case _ :: Nil =>
+          case Some(p"$_ $_ (..$_)") => Patch.empty
+          // case ::(_, Nil) =>
+          case Some(p"$_(..$_)") => Patch.empty
+          // case (_, Nil) =>
+          case Some(p"(..$_)") => Patch.empty
           case _ => Patch.replaceTree(t, s"List.empty")
         }
       case t @ q"List[$e]()" => Patch.replaceTree(t, s"List.empty[$e]")
