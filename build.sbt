@@ -29,21 +29,6 @@ val commonSettings = Seq(
       "s01-sonatype-staging",
       s"https://${sonatypeCredentialHost.value}/service/local/staging/deploy/maven2"
     )
-  },
-  sonatypeBundleDirectory := {
-    (ThisBuild / baseDirectory).value / "target" / "s01-sonatype-staging" / s"${(ThisBuild / version).value}"
-  },
-  publishTo :=  {
-    val profileM   = sonatypeTargetRepositoryProfile.?.value
-    val repository = sonatypeRepository.value
-    val staged = profileM.map { stagingRepoProfile =>
-      "releases" at s"${repository}/${stagingRepoProfile.deployPath}"
-    }
-    Some(staged.getOrElse(if (version.value.endsWith("-SNAPSHOT")) {
-      sonatypeSnapshotResolver.value
-    } else {
-      sonatypeStagingResolver.value
-    }))
   }
 )
 
@@ -51,7 +36,7 @@ inThisBuild(
   List(
     semanticdbEnabled := true,
     semanticdbIncludeInJar := true,
-    semanticdbVersion := scalafixSemanticdb.revision,
+    semanticdbVersion := scalafixSemanticdb.revision
   )
 )
 
