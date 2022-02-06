@@ -13,15 +13,14 @@ other hand it is nice to have codebase unified as it was written by a single per
 
 ### EmptyCollectionsUnified
 
-Rewrite empty collection constructions like `List()`, `Set()` or `Map()` to their equivalent `.empty` method calls
+Rewrite empty collection constructions like `List()`, `Set()` or `Map()` to their equivalent `.empty` method calls.
+
+Rewrite `List()` when used inside match-case statement to `Nil`.
 
 ## Installation
 
-For now only snapshots are published
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.ghostbuster91.scalafix-unified/unified/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.ghostbuster91.scalafix-unified/unified)
 
 ```scala
-ThisBuild / scalafixResolvers +=  coursierapi.MavenRepository.of("https://s01.oss.sonatype.org/content/repositories/snapshots")
-ThisBuild /  scalafixDependencies += "io.github.ghostbuster91.scalafix-unified" %% "unified" % "0.0.2+1-01e64859-SNAPSHOT"
+ThisBuild /  scalafixDependencies += "io.github.ghostbuster91.scalafix-unified" %% "unified" % "<version>"
 ```
-
-Head over to latest CI build to obtain latest version number
