@@ -19,7 +19,8 @@ Rewrite `List()` when used inside match-case statement to `Nil`.
 
 ## Installation
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.ghostbuster91.scalafix-unified/unified/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.ghostbuster91.scalafix-unified/unified)
+[![tag](https://img.shields.io/github/v/tag/ghostbuster91/scalafix-unified)](https://github.com/ghostbuster91/scalafix-unified/releases/latest)
+
 
 ```scala
 ThisBuild /  scalafixDependencies += "io.github.ghostbuster91.scalafix-unified" %% "unified" % "<version>"
