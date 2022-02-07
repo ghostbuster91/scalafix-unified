@@ -50,6 +50,9 @@ object EmptyCollectionsUnified {
       case (Nil, Nil) => 1
       case _ => 2
     }
+
+    // non-empty list construction shouldn't be rewritten
+    val n = List(1, 2, 3)
   }
 
   object set {

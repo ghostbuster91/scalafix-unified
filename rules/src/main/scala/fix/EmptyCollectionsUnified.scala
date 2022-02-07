@@ -11,7 +11,8 @@ class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
       case t @ Term.Name("List") =>
         t.parent match {
           // val b: List[Int] = List()
-          case Some(p @ Term.Apply(_, _)) => Patch.replaceTree(p, "List.empty")
+          case Some(p @ Term.Apply(q, Nil)) =>
+            Patch.replaceTree(p, "List.empty")
           //  case (List(), List()) =>
           //  case List() =>
           case Some(p @ p"List()") => Patch.replaceTree(p, "Nil")
