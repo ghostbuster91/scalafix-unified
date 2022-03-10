@@ -59,13 +59,13 @@ object EmptyCollectionsUnified {
 
     // should not rewrite Nil on alternative case match
     val lb = a match {
-      case Nil|Nil => 1
+      case Nil | Nil => 1
       case _ => 2
     }
 
     // should rewrite List() to Nil on alternative case match
     val lc = a match {
-      case Nil|Nil => 1
+      case Nil | Nil => 1
       case _ => 2
     }
 
