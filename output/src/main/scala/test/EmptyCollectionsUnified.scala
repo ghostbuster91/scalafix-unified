@@ -45,6 +45,30 @@ object EmptyCollectionsUnified {
       case _ => 2
     }
 
+    // should not rewrite Nil when used within nested unapply
+    val la = (a, List(a)) match {
+      case (_, List(Nil)) => 1
+      case _ => 2
+    }
+
+    // should rewrite List() to Nil when used within nested unapply
+    val ld = (a, List(a)) match {
+      case (_, List(Nil)) => 1
+      case _ => 2
+    }
+
+    // should not rewrite Nil on alternative case match
+    val lb = a match {
+      case Nil | Nil => 1
+      case _ => 2
+    }
+
+    // should rewrite List() to Nil on alternative case match
+    val lc = a match {
+      case Nil | Nil => 1
+      case _ => 2
+    }
+
     // should rewrite to Nil when used within unapply
     val m = (a, a) match {
       case (Nil, Nil) => 1
@@ -53,6 +77,24 @@ object EmptyCollectionsUnified {
 
     // non-empty list construction shouldn't be rewritten
     val n = List(1, 2, 3)
+
+    // Nil in application not being :: should be replace by List.empty
+    val o = List(List.empty)
+
+    // Nil in infix application not being :: should be replace by List.empty
+    val q = List.empty ++ List.empty
+
+    // List() should be replace to Nil when deconstructing type
+    val List(Nil, r) = List(List.empty, List(1, 2))
+
+    // Nil should not be replaced to List.empty when deconstructing type (nested)
+    val List(List(Nil), u) = List(List(List.empty), List(1, 2))
+
+    // Nil should not be replaced when deconstructing type
+    val List(Nil, v) = List(List.empty, List(1, 2))
+
+    // Nil should not be replaced when deconstructing type (nested)
+    val List(List(Nil), w) = List(List(List.empty), List(1, 2))
   }
 
   object set {

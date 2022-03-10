@@ -11,7 +11,7 @@ class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
       case t @ Term.Name("List") =>
         t.parent match {
           // val b: List[Int] = List()
-          case Some(p @ Term.Apply(q, Nil)) =>
+          case Some(p @ Term.Apply(_, Nil)) =>
             Patch.replaceTree(p, "List.empty")
           //  case (List(), List()) =>
           //  case List() =>
@@ -21,17 +21,11 @@ class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
       case t @ q"Nil" =>
         t.parent match {
           // ::(_, Nil)
-          case Some(Term.Apply(_, _)) => Patch.empty
+          case Some(Term.Apply(Term.Name("::"), _)) => Patch.empty
           // 1 :: Nil
-          case Some(Term.ApplyInfix(_)) => Patch.empty
+          case Some(Term.ApplyInfix((_, Term.Name("::"), _, _))) => Patch.empty
           // case Nil =>
-          case Some(Case(_)) => Patch.empty
-          // case _ :: Nil =>
-          case Some(p"$_ $_ (..$_)") => Patch.empty
-          // case ::(_, Nil) =>
-          case Some(p"$_(..$_)") => Patch.empty
-          // case (_, Nil) =>
-          case Some(p"(..$_)") => Patch.empty
+          case Some(t) if treeInsidePatternMatching(t) => Patch.empty
           case _ => Patch.replaceTree(t, s"List.empty")
         }
       case t @ q"Set()" => Patch.replaceTree(t, "Set.empty")
@@ -40,5 +34,12 @@ class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
       case t @ q"Map[$k, $v]()" => Patch.replaceTree(t, s"Map.empty[$k, $v]")
       case _ => Patch.empty
     }.asPatch
+  }
+
+  private def treeInsidePatternMatching(t: Tree): Boolean = t match {
+    case Case(_) => true
+    case Pat.Extract(_, _) => true
+    case Pat.ExtractInfix(_) => true
+    case _ => t.parent.fold(ifEmpty = false)(treeInsidePatternMatching(_))
   }
 }
