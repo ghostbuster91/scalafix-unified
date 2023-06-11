@@ -98,6 +98,51 @@ object EmptyCollectionsUnified {
 
     // Nil should not be replaced when deconstructing type (nested)
     val List(List(Nil), w) = List(List(List()), List(1, 2))
+
+    // should respect suppresions
+    // scalafix:off
+    object suppresions {
+      val a = List[Int]()
+      val b: List[Int] = List()
+      val c = List.empty[Int]
+      val d: List[Int] = List.empty
+
+      val e = a match {
+        case List() => 1
+        case _ => 2
+      }
+
+      val h: List[Int] = Nil
+
+      val ld = (a, List(a)) match {
+        case (_, List(List())) => 1
+        case _ => 2
+      }
+
+      val lb = a match {
+        case Nil | Nil => 1
+        case _ => 2
+      }
+
+      val lc = a match {
+        case List() | List() => 1
+        case _ => 2
+      }
+
+      val m = (a, a) match {
+        case (List(), List()) => 1
+        case _ => 2
+      }
+
+      val o = List(Nil)
+
+      val q = List.empty ++ Nil
+
+      val List(List(), r) = List(List(), List(1, 2))
+
+      val List(List(List()), u) = List(List(List()), List(1, 2))
+    }
+    // scalafix:on
   }
 
   object set {
@@ -105,6 +150,15 @@ object EmptyCollectionsUnified {
     val b: Set[Int] = Set()
     val c = Set.empty[Int]
     val d: Set[Int] = Set.empty
+
+    // scalafix:off
+    object suppressions {
+      val a = List[Int]()
+      val b: List[Int] = List()
+      val c = List.empty[Int]
+      val d: List[Int] = List.empty
+    }
+    // scalafix:on
   }
 
   object map {
@@ -112,5 +166,14 @@ object EmptyCollectionsUnified {
     val b: Map[Int, Int] = Map()
     val c = Map.empty[Int, Int]
     val d: Map[Int, Int] = Map.empty
+
+    // scalafix:off
+    object suppressions {
+      val a = Map[Int, Int]()
+      val b: Map[Int, Int] = Map()
+      val c = Map.empty[Int, Int]
+      val d: Map[Int, Int] = Map.empty
+    }
+    // scalafix:on
   }
 }

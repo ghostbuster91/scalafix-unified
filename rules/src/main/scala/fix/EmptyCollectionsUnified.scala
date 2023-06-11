@@ -7,15 +7,15 @@ import scala.meta._
 class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case t @ q"List[$e]()" => Patch.replaceTree(t, s"List.empty[$e]")
+      case t @ q"List[$e]()" => Patch.replaceTree(t, s"List.empty[$e]").atomic
       case t @ Term.Name("List") =>
         t.parent match {
           // val b: List[Int] = List()
           case Some(p @ Term.Apply(_, Nil)) =>
-            Patch.replaceTree(p, "List.empty")
+            Patch.replaceTree(p, "List.empty").atomic
           //  case (List(), List()) =>
           //  case List() =>
-          case Some(p @ p"List()") => Patch.replaceTree(p, "Nil")
+          case Some(p @ p"List()") => Patch.replaceTree(p, "Nil").atomic
           case _ => Patch.empty
         }
       case t @ q"Nil" =>
@@ -26,12 +26,12 @@ class EmptyCollectionsUnified extends SemanticRule("EmptyCollectionsUnified") {
           case Some(Term.ApplyInfix((_, Term.Name("::"), _, _))) => Patch.empty
           // case Nil =>
           case Some(t) if treeInsidePatternMatching(t) => Patch.empty
-          case _ => Patch.replaceTree(t, s"List.empty")
+          case _ => Patch.replaceTree(t, s"List.empty").atomic
         }
-      case t @ q"Set()" => Patch.replaceTree(t, "Set.empty")
-      case t @ q"Set[$e]()" => Patch.replaceTree(t, s"Set.empty[$e]")
-      case t @ q"Map()" => Patch.replaceTree(t, "Map.empty")
-      case t @ q"Map[$k, $v]()" => Patch.replaceTree(t, s"Map.empty[$k, $v]")
+      case t @ q"Set()" => Patch.replaceTree(t, "Set.empty").atomic
+      case t @ q"Set[$e]()" => Patch.replaceTree(t, s"Set.empty[$e]").atomic
+      case t @ q"Map()" => Patch.replaceTree(t, "Map.empty").atomic
+      case t @ q"Map[$k, $v]()" => Patch.replaceTree(t, s"Map.empty[$k, $v]").atomic
       case _ => Patch.empty
     }.asPatch
   }
