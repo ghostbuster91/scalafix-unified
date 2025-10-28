@@ -23,7 +23,7 @@ jobs:
       - uses: olafurpg/setup-scala@v14
         with:
           java-version: ${{ matrix.java.version }}
-      - uses: coursier/cache-action@v6
+      - uses: coursier/cache-action@v7
       - name: Lint
         run: sbt scalafmtCheckAll
       - name: Test
