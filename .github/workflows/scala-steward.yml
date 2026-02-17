@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 11
-      - uses: coursier/cache-action@v6
+      - uses: coursier/cache-action@v8
       - name: Launch Scala Steward
         uses: scala-steward-org/scala-steward-action@v2
         with:
