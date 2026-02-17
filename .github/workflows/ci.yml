@@ -19,7 +19,7 @@ jobs:
     name: With ${{ matrix.java.name }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: olafurpg/setup-scala@v14
         with:
           java-version: ${{ matrix.java.version }}
@@ -34,7 +34,7 @@ jobs:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: olafurpg/setup-scala@v14
